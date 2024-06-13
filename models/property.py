@@ -106,6 +106,35 @@ class Property:
             
             return property
         
-    property 
+    @classmethod
+    def get_all(cls):
+        sql= """
+        SELECT * FROM properties
+        """
+        rows = cursor.execute(sql).fetchall
+        return [cls.instance_from_db(row) for row in rows]
+    
+    @classmethod
+    def find_by_id(cls, id):
+        sql = """
+        SELECT * FROM  properties
+        where id = ?
+        """
+        row = cursor.execute(sql, (id,)).fetchone()
+        return cls.instance_from_db(row) if row else None
+    
+    def owners(self):
+        """Return list of employees associated with current department"""
+        from owner import Owner
+        sql = """
+            SELECT * FROM owner
+            WHERE owner_id = ?
+        """
+        cursor.execute(sql, (self.id,),)
+
+        rows = cursor.fetchall()
+        return [
+            Owner.instance_from_db(row) for row in rows
+        ]
     
         

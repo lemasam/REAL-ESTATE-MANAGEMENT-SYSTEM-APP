@@ -1,8 +1,8 @@
 import sqlite3 #Import the sqlite3 module to work with SQLite databases.
+from __init__ import cursor, conn
 
-conn =  sqlite3.connect("management.sqlite")  # Establish a connection to a database named management.sqlite
-
-cursor = conn.cursor() #Create a cursor object to execute SQL commands.
+def get_db_connection():
+    return sqlite3.connect("management.db")
 
 
 
@@ -109,13 +109,13 @@ class Owner:
     @classmethod
     def get_all(cls):
         sql= """
-        SELECT * FROM onwers
+        SELECT * FROM owners
         """
         rows = cursor.execute(sql).fetchall
         return [cls.instance_from_db(row) for row in rows]
     
     @classmethod
-    def find_by_all(cls, id):
+    def find_by_id(cls, id):
         sql = """
         SELECT * FROM  owners
         where id = ?
