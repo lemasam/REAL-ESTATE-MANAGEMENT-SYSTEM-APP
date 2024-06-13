@@ -93,6 +93,35 @@ class Owner:
             print(f"Owner with ID {owner_id} deleted successfully")
             
         
-   
+    @classmethod
+    def instance_from_db(cls, row):
+           
+        owner = cls.all.get(row[0])
+        if owner:
+            owner.name = row[1]
+            owner.phone_number= row[2]
+        else:
+            owner = cls(row[1], row[2])
+            owner.id = row[0]
+            cls.all[owner.id] = owner
+        return owner
+    
+    @classmethod
+    def get_all(cls):
+        sql= """
+        SELECT * FROM onwers
+        """
+        rows = cursor.execute(sql).fetchall
+        return [cls.instance_from_db(row) for row in rows]
+    
+    @classmethod
+    def find_by_all(cls, id):
+        sql = """
+        SELECT * FROM  owners
+        where id = ?
+        """
+        row = cursor.execute(sql, (id,)).fetchone()
+        return cls.instance_from_db(row) if row else None
+
 
 
