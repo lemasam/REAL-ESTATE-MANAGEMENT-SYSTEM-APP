@@ -1,4 +1,4 @@
-from __init__ import curson, conn
+from __init__ import cursor, conn
 
 from owner import Owner
 
@@ -46,7 +46,7 @@ class Property:
             owner_id INTEGER,
             FOREIGN KEY (owner_id)REFERENCE owner (id))
         """
-        curson.execute(sql)
+        cursor.execute(sql)
         conn.commit()
         
     @classmethod
@@ -54,7 +54,7 @@ class Property:
         sql ="""
         DROP TABLE IF EXISTS  properties
         """
-        curson.execute(sql)
+        cursor.execute(sql)
         conn.commit()
         
     def save (self):
@@ -63,8 +63,34 @@ class Property:
         VALUES (?, ?, ?)
         """
         
-        curson.execute(sql,(self.address,self.owner_id))
-        conn.commit ()
+        cursor.execute(sql,(self.address,self.owner_id))
+        conn.commit () 
         
+        self.id = cursor.lastrowid
+        type(self).all[self.id] = self
     
+    def update (self):
+        sql = """
+        UPDATE properties 
+        SET adrress= ?, owner_id = ?
+        WHERE id = ?
+        """
+        
+        cursor.execute(sql,(self.address,self.owner_id))
+        
+        conn.commit()
+        
+    def delete(self):
+        sql = """
+        DELETE FROM properties
+        WHERE id = ?
+        """
+        cursor.execute (sql,(self.id))
+        conn.commit()
+        
+        # delete the dictionary entry using id
+        del type(self).all[self.id]
+        
+        #  setting id to none
+        self.id = None
         
