@@ -67,4 +67,18 @@ class Tenant:
             )
     
    
+    @classmethod
+    def create_table(cls):
+        sql ="""
+        CREATE TABLE IF NOT EXISTS tenants(
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            phone_number INTEGER,
+            email TEXT,
+            property_id INTEGER,
+            FOREIGN KEY (property_id)REFERENCE property (id))
+        """
+        cursor.execute(sql)
+        conn.commit()
         
+    
