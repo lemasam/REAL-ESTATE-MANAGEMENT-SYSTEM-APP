@@ -124,7 +124,6 @@ class Property:
         return cls.instance_from_db(row) if row else None
     
     def owners(self):
-        """Return list of employees associated with current department"""
         from owner import Owner
         sql = """
             SELECT * FROM owner

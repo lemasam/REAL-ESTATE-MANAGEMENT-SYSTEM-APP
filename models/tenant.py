@@ -91,11 +91,11 @@ class Tenant:
         
     def save (self):
         sql = """
-        INSERT INTO properties(name,phone_number, email,property_id,)
+        INSERT INTO tenants(name,phone_number, email,property_id)
         VALUES (?, ?, ?,?)
         """
         
-        cursor.execute(sql,(self.name,self.phone_number, self.email,self.property_id,))
+        cursor.execute(sql,(self.name,self.phone_number, self.email,self.property_id))
         conn.commit () 
         
         self.id = cursor.lastrowid
@@ -103,18 +103,18 @@ class Tenant:
     
     def update (self):
         sql = """
-        UPDATE properties 
-        SET adrress= ?, owner_id = ?
+        UPDATE tenants
+        SET name= ?, phone_number = ?, email= ?, property_id = ?
         WHERE id = ?
         """
         
-        cursor.execute(sql,(self.address,self.owner_id))
+        cursor.execute(sql,(self.name,self.phone_number, self.email,self.property_id))
         
         conn.commit()
         
     def delete(self):
         sql = """
-        DELETE FROM properties
+        DELETE FROM tenants
         WHERE id = ?
         """
         cursor.execute (sql,(self.id))
@@ -128,23 +128,34 @@ class Tenant:
       
     @classmethod
     def instance_from_db(cls,row):
-        property = cls.all.get(row[0])
-        if property:
-            property.address = row[1]
+        tenant = cls.all.get(row[0])
+        if tenant:
+            tenant.name = row[1]
+            tenant.phone_number =row[2]
+            tenant.email =row[3]
+            tenant.property_id =[4]
         else: 
-            property = cls(row[1],)
-            property.id = row[0] 
-            cls.all[property.id]= property
+            tenant = cls(row[1],row[2],row[3],row[4],row[0])
+            cls.all[tenant.id] = tenant
             
-            return property
+            return tenant
         
     @classmethod
     def get_all(cls):
         sql= """
-        SELECT * FROM properties
+        SELECT * FROM tenants
         """
         rows = cursor.execute(sql).fetchall
         return [cls.instance_from_db(row) for row in rows]
     
     
+    @classmethod
+    def find_by_id(cls, id):
+        sql = """
+        SELECT * FROM  tenants
+        where id = ?
+        """
+        row = cursor.execute(sql, (id,)).fetchone()
+        return cls.instance_from_db(row) if row else None
     
+   
