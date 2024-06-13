@@ -59,4 +59,15 @@ class Owner:
         cursor.execute(sql)
         conn.commit()
         
+    def save(self):
+        sql ="""
+        INSERT INTO owners(self.name,self.phone_number)
+        VALUES (?, ?)
+        """
+        cursor.execute(sql,(self.name, self.phone_number))
+        conn.commit ()
+        self.id =cursor.lastrowid 
+        
     
+
+
