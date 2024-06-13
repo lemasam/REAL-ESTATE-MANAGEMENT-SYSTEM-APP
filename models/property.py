@@ -1,4 +1,4 @@
-from __init__ import CURSOR, CONN
+from __init__ import curson, conn
 
 from owner import Owner
 
@@ -37,4 +37,25 @@ class Property:
                 " owner_id must reference a owner in the database"
             )
     
-    @
+    @classmethod
+    def create_table(cls):
+        sql ="""
+        CREATE TABLE IF NOT EXISTS properties(
+            id INTEGER PRIMARY KEY,
+            address TEXT,
+            owner_id INTEGER,
+            FOREIGN KEY (owner_id)REFERENCE owner (id))
+        """
+        curson.execute(sql)
+        conn.commit()
+        
+    @classmethod
+    def drop_table(cls):
+        sql ="""
+        DROP TABLE IF EXISTS  properties
+        """
+        curson.execute(sql)
+        conn.commit()
+        
+    
+        
