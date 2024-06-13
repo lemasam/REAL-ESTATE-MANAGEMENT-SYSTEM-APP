@@ -69,5 +69,20 @@ class Owner:
         self.id =cursor.lastrowid 
         
     
+    @classmethod
+    def create(cls,name,phone_number):
+        owner = cls(name, phone_number)
+        owner.save()
+        return owner 
+    
+    def update(self):
+        sql = """
+        UPDATE owners
+        SET name = ?, phone_number = ?
+        WHERE id =?
+        """
+        
+ 
+
 
 
