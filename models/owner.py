@@ -50,7 +50,13 @@ class Owner:
         )
         """
         
-   
-
-
-
+    @classmethod
+    def drop_table(cls):
+        sql ="""
+        DROP TABLE IF EXISTS;
+        """   
+        
+        cursor.execute(sql)
+        conn.commit()
+        
+    
