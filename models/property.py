@@ -93,4 +93,19 @@ class Property:
         
         #  setting id to none
         self.id = None
+      
+    @classmethod
+    def instance_from_db(cls,row):
+        property = cls.all.get(row[0])
+        if property:
+            property.address = row[1]
+        else: 
+            property = cls(row[1],)
+            property.id = row[0] 
+            cls.all[property.id]= property
+            
+            return property
+        
+    property 
+    
         
