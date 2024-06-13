@@ -57,5 +57,14 @@ class Property:
         curson.execute(sql)
         conn.commit()
         
+    def save (self):
+        sql = """
+        INSERT INTO properties(address,owner_id)
+        VALUES (?, ?, ?)
+        """
+        
+        curson.execute(sql,(self.address,self.owner_id))
+        conn.commit ()
+        
     
         
