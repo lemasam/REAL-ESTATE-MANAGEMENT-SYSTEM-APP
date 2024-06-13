@@ -82,7 +82,17 @@ class Owner:
         WHERE id =?
         """
         
- 
-
+        cursor.execute(sql, (self.name, self.phone_number,self.id))
+        conn.commit()
+        
+    def delete(owner_id):
+        confirmation = input("Are you sure you want to delete this property? (y/n): ")
+        if confirmation.lower() == 'y':        
+            cursor.execute('DELETE FROM owners WHERE id=?', (owner_id,))
+            conn.commit()
+            print(f"Owner with ID {owner_id} deleted successfully")
+            
+        
+   
 
 
