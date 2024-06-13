@@ -88,4 +88,41 @@ class Tenant:
         """
         cursor.execute(sql)
         conn.commit()
+        
+    def save (self):
+        sql = """
+        INSERT INTO properties(name,phone_number, email,property_id,)
+        VALUES (?, ?, ?,?)
+        """
+        
+        cursor.execute(sql,(self.name,self.phone_number, self.email,self.property_id,))
+        conn.commit () 
+        
+        self.id = cursor.lastrowid
+        type(self).all[self.id] = self
+    
+    def update (self):
+        sql = """
+        UPDATE properties 
+        SET adrress= ?, owner_id = ?
+        WHERE id = ?
+        """
+        
+        cursor.execute(sql,(self.address,self.owner_id))
+        
+        conn.commit()
+        
+    def delete(self):
+        sql = """
+        DELETE FROM properties
+        WHERE id = ?
+        """
+        cursor.execute (sql,(self.id))
+        conn.commit()
+        
+        # delete the dictionary entry using id
+        del type(self).all[self.id]
+        
+        #  setting id to none
+        self.id = None
     
