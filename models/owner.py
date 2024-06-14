@@ -1,8 +1,5 @@
-import sqlite3 #Import the sqlite3 module to work with SQLite databases.
-from __init__ import cursor, conn
 
-def get_db_connection():
-    return sqlite3.connect("management.db")
+from db import cursor, conn
 
 
 
@@ -49,6 +46,8 @@ class Owner:
             phone_number INTEGER
         )
         """
+        cursor.execute(sql)
+        conn.commit()
         
     @classmethod
     def drop_table(cls):
@@ -123,5 +122,6 @@ class Owner:
         row = cursor.execute(sql, (id,)).fetchone()
         return cls.instance_from_db(row) if row else None
 
+Owner.create_table()
 
 

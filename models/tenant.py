@@ -1,7 +1,7 @@
-from __init__ import cursor, conn
+from db import cursor, conn
 
-from owner import Owner
-from property import Propertty
+from models.owner import Owner
+from models.property import Property
 
 class Tenant:
     
@@ -58,7 +58,7 @@ class Tenant:
     
     @property_id.setter
     def property_id(self, property_id):
-        if type(property_id) is int and Propertty.find_by_id(property_id):
+        if type(property_id) is int and Property.find_by_id(property_id):
             self._property_id = property_id
             
         else:
@@ -75,8 +75,7 @@ class Tenant:
             name TEXT,
             phone_number INTEGER,
             email TEXT,
-            property_id INTEGER,
-            FOREIGN KEY (property_id)REFERENCE property (id))
+            property_id INTEGER NOT NULL REFERENCES owner(id))
         """
         cursor.execute(sql)
         conn.commit()
@@ -158,4 +157,5 @@ class Tenant:
         row = cursor.execute(sql, (id,)).fetchone()
         return cls.instance_from_db(row) if row else None
     
+Tenant.create_table()
    

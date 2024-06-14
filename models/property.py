@@ -1,6 +1,6 @@
-from __init__ import cursor, conn
+from db import cursor, conn
 
-from owner import Owner
+from models.owner import Owner
 
 class Property:
     
@@ -43,8 +43,7 @@ class Property:
         CREATE TABLE IF NOT EXISTS properties(
             id INTEGER PRIMARY KEY,
             address TEXT,
-            owner_id INTEGER,
-            FOREIGN KEY (owner_id)REFERENCE owner (id))
+            owner_id INTEGER NOT NULL REFERENCES owner(id))
         """
         cursor.execute(sql)
         conn.commit()
@@ -137,3 +136,4 @@ class Property:
         ]
     
         
+Property.create_table()
