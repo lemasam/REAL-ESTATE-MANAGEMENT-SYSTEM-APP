@@ -92,15 +92,77 @@ def main():
             else:
                 print("Owner not found.")   
                 
+ #property method:  
+                
+        elif choice == '6':
+            try:
+                address = input("Enter property address: ")
+                owner_id = int(input("Enter owner ID for this property: "))
+            except ValueError:
+                print("Invalid input. Please enter a valid integer for owner ID.")
+                continue  # Restart the loop to prompt the user again
+
+            owner_id = int(input("Enter owner ID for this property: "))
+            Property.create(address, owner_id)
+            print(f"Property '{address}' added successfully with Owner ID {owner_id}.")
                 
                 
+        elif choice == '7':
+            try:
+                property_id = int(input("Enter property ID to update: "))
+            except ValueError:
+                print("Invalid input. Please enter a valid integer for property ID.")
+                continue  # Restart the loop to prompt the user again
+
+            property = Property.find_by_id(property_id)
+            if property:
+                address = input(f"Enter new address for property ({property[1]}): ")
+                Property.update(property_id, address)
+                print(f"Property ID {property_id} updated successfully.")
+            else:
+                print("Property not found.")
                 
+        elif choice == '8':
+            try:
+                property_id = int(input("Enter property ID to delete: "))
+            except ValueError:
+                print("Invalid input. Please enter a valid integer for property ID.")
+                continue  # Restart the loop to prompt the user again
+
+            property = Property.find_by_id(property_id)
+            if property:
+                Property.delete(property_id)                
+            else:
+                print("Property not found.")
+
+        elif choice == '9':
+            properties = Property.get_all()
+            if properties:
+                print("Properties:")
+                print("-" * 20)
+                for property in properties:
+                    print(f"ID: {property[0]}")
+                    print(f"Address: {property[1]}")
+                    print(f"Owner ID: {property[2]}")
+                    print("-" * 20)  # Separate each property details
+            else:
+                print("No properties found.")
                 
+        elif choice == '10':
+            try:
+                property_id = int(input("Enter property ID to find: "))
+            except ValueError:
+                print("Invalid input. Please enter a valid integer for property ID.")
+                continue  # Restart the loop to prompt the user again
+
+            property = Property.find_by_id(property_id)
+            if property:
+                print(f"Property ID: {property[0]}, Address: {property[1]}, Owner ID: {property[2]}")
+            else:
+                print("Property not found.")
                 
-                
-                
-                
-                
+# tenant
+        
         elif choice == '16':
             print("Goodbye! ")
             break
