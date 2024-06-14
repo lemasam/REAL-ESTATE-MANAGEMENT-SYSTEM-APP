@@ -4,7 +4,7 @@ from models.tenant import Tenant
 
 def main():
     while True:
-        print("\n Welcome To Real Estate Management SYSTEM ")
+        print("\n Welcome To Real Estate Management SYSTEM")
 
 # Owner methods
         print("1. Add Owner")
@@ -90,7 +90,23 @@ def main():
             if owner:
                 print(f"Owner ID: {owner[0]}, Name: {owner[1]}")
             else:
-                print("Owner not found.")    
+                print("Owner not found.")   
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+        elif choice == '16':
+            print("Goodbye! ")
+            break
+
+        else:
+            print("Invalid choice. Please try again.") 
         
 if __name__ == "__main__":
     main()
