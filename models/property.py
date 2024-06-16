@@ -1,139 +1,65 @@
-from db import cursor, conn
 
-from models.owner import Owner
 
+from models.owner import Owner  
+        
+import sqlite3
+
+# Create a SQLite database
+conn = sqlite3.connect('management.db')
+cursor = conn.cursor()
+def create_tables_if_not_exist():
+    # Connect to the SQLite database
+    conn = sqlite3.connect('management.db')
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='properties';")
+    properties_table_exists = cursor.fetchone() is not None
+
+    if not properties_table_exists:
+        cursor.execute('''CREATE TABLE properties (
+                            id INTEGER PRIMARY KEY,
+                            address TEXT NOT NULL,
+                            owner_id INTEGER,
+                            FOREIGN KEY (owner_id) REFERENCES owners (id)
+                        );''')
+    conn.commit()
+    conn.close()
+    
 class Property:
-    
-    def __init__(self,address,owner_id, id= None):
-        self.id = id 
-        self.adress = address
+    def __init__(self, address, owner_id=None):
+        self.address = address
         self.owner_id = owner_id
-        
-    @property
-    def address(self):
-        return self._address
-    
-    @address.setter
-    def address(self,address):
-        if isinstance(address,str) and len(address):
-            self._address = address
-            
-        else: 
-            raise ValueError(
-                "Address must be a non-empty string"
-            )
-            
-    @property
-    def owner_id(self):
-        return self._owner_id 
-    
-    @owner_id.setter
-    def owner_id(self, owner_id):
-        if type(owner_id) is int and Owner.find_by_id(owner_id):
-            self._owner_id = owner_id
-            
-        else:
-            raise ValueError(
-                " owner_id must reference a owner in the database"
-            )
-    
-    @classmethod
-    def create_table(cls):
-        sql ="""
-        CREATE TABLE IF NOT EXISTS properties(
-            id INTEGER PRIMARY KEY,
-            address TEXT,
-            owner_id INTEGER NOT NULL REFERENCES owner(id))
-        """
-        cursor.execute(sql)
-        conn.commit()
-        
-    @classmethod
-    def drop_table(cls):
-        sql ="""
-        DROP TABLE IF EXISTS  properties
-        """
-        cursor.execute(sql)
-        conn.commit()
-        
-    def save (self):
-        sql = """
-        INSERT INTO properties(address,owner_id)
-        VALUES (?, ?, ?)
-        """
-        
-        cursor.execute(sql,(self.address,self.owner_id))
-        conn.commit () 
-        
-        self.id = cursor.lastrowid
-        type(self).all[self.id] = self
-    
-    def update (self):
-        sql = """
-        UPDATE properties 
-        SET adrress= ?, owner_id = ?
-        WHERE id = ?
-        """
-        
-        cursor.execute(sql,(self.address,self.owner_id))
-        
-        conn.commit()
-        
-    def delete(self):
-        sql = """
-        DELETE FROM properties
-        WHERE id = ?
-        """
-        cursor.execute (sql,(self.id))
-        conn.commit()
-        
-        # delete the dictionary entry using id
-        del type(self).all[self.id]
-        
-        #  setting id to none
-        self.id = None
-      
-    @classmethod
-    def instance_from_db(cls,row):
-        property = cls.all.get(row[0])
-        if property:
-            property.address = row[1]
-        else: 
-            property = cls(row[1],)
-            property.id = row[0] 
-            cls.all[property.id]= property
-            
-            return property
-        
-    @classmethod
-    def get_all(cls):
-        sql= """
-        SELECT * FROM properties
-        """
-        rows = cursor.execute(sql).fetchall
-        return [cls.instance_from_db(row) for row in rows]
-    
-    @classmethod
-    def find_by_id(cls, id):
-        sql = """
-        SELECT * FROM  properties
-        where id = ?
-        """
-        row = cursor.execute(sql, (id,)).fetchone()
-        return cls.instance_from_db(row) if row else None
-    
-    def owners(self):
-        from owner import Owner
-        sql = """
-            SELECT * FROM owner
-            WHERE owner_id = ?
-        """
-        cursor.execute(sql, (self.id,),)
 
-        rows = cursor.fetchall()
-        return [
-            Owner.instance_from_db(row) for row in rows
-        ]
+    @staticmethod
+    def create(address, owner_id=None):
+        cursor.execute('INSERT INTO properties (address, owner_id) VALUES (?, ?)', (address, owner_id))
+        conn.commit()
+
+    @staticmethod
+    def update(property_id, address):
+        cursor.execute('UPDATE properties SET address=? WHERE id=?', (address, property_id))
+        conn.commit()
+
+    @staticmethod
+    def delete(property_id):
+        confirmation = input("Are you sure you want to delete this property? (y/n): ")
+        if confirmation.lower() == 'y':
+            cursor.execute('DELETE FROM properties WHERE id=?', (property_id,))
+            conn.commit()
+            print(f"Property with ID {property_id} deleted successfully.")
+
+    @staticmethod
+    def get_all():
+        cursor.execute('SELECT * FROM properties')
+        return cursor.fetchall()
+
+    @staticmethod
+    def find_by_id(property_id):
+        cursor.execute('SELECT * FROM properties WHERE id=?', (property_id,))
+        return cursor.fetchone()
     
+    @staticmethod
+    def get_properties_by_owner(owner_id):
+        cursor.execute('SELECT * FROM properties WHERE owner_id=?', (owner_id,))
+        return cursor.fetchall()
         
-Property.create_table()

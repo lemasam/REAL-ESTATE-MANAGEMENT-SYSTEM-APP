@@ -1,127 +1,91 @@
 
-from db import cursor, conn
 
 
 
-#  creating owners class
+import sqlite3
+
+# Create a SQLite database
+conn = sqlite3.connect('management.db')
+cursor = conn.cursor()
+def create_tables_if_not_exist():
+    # Connect to the SQLite database
+    conn = sqlite3.connect('management.db')
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='owners';")
+    owners_table_exists = cursor.fetchone() is not None
+
+
+    if not owners_table_exists:
+                cursor.execute('''CREATE TABLE owners (
+                                    id INTEGER PRIMARY KEY,
+                                    name TEXT NOT NULL,
+                                    phone_number TEXT,
+                                );''')
+                conn.commit()
+                conn.close()
+                
 class Owner:
-    def __init__(self, name, phone_number, id= None):
-        self.id = id 
+    def __init__(self, name, phone_number=None):
         self.name = name
         self.phone_number = phone_number
-        
-    @property
-    def name(self):
-        return self._name
     
-    @name.setter 
-    def name(self, name):
-        if isinstance(name, str) and len(name):
-            self._name = name
-        else:
-            raise ValueError(
-                "Name must be a non-empty string"
-            )
-    
-    
-    @property
-    def phone_number(self):
-        return self._phone_number
-    
-    @phone_number.setter
-    def name(self, phone_number):
-        if isinstance(phone_number, int) and len(phone_number):
-            self._phone_number = phone_number
-        else:
-            raise ValueError(
-                "Name must be a non-empty integer"
-            )
-            
-    @classmethod
-    def create_table(cls):
-        sql = """
-        CREATE TABLE  IF NOT EXISTS owners(
-            id INTEGER PRIMARY KEY,
-            name TEXT,
-            phone_number INTEGER
+
+    @staticmethod
+    def create(name, phone_number=None):
+        cursor.execute(
+            'INSERT INTO owners (name, phone_number) VALUES (?, ?)',
+            (name, phone_number)
         )
-        """
-        cursor.execute(sql)
         conn.commit()
-        
-    @classmethod
-    def drop_table(cls):
-        sql ="""
-        DROP TABLE IF EXISTS;
-        """   
-        
-        cursor.execute(sql)
+
+    @staticmethod
+    def update(owner_id, name, phone_number=None):
+        cursor.execute(
+            'UPDATE owners SET name=?, phone_number=?, WHERE id=?',
+            (name, phone_number, owner_id)
+        )
         conn.commit()
-        
-    def save(self):
-        sql ="""
-        INSERT INTO owners(self.name,self.phone_number)
-        VALUES (?, ?)
-        """
-        cursor.execute(sql,(self.name, self.phone_number))
-        conn.commit ()
-        self.id =cursor.lastrowid 
-        
-    
-    @classmethod
-    def create(cls,name,phone_number):
-        owner = cls(name, phone_number)
-        owner.save()
-        return owner 
-    
-    def update(self):
-        sql = """
-        UPDATE owners
-        SET name = ?, phone_number = ?
-        WHERE id =?
-        """
-        
-        cursor.execute(sql, (self.name, self.phone_number,self.id))
-        conn.commit()
-        
+
+    @staticmethod
     def delete(owner_id):
-        confirmation = input("Are you sure you want to delete this property? (y/n): ")
-        if confirmation.lower() == 'y':        
+        confirmation = input("Are you sure you want to delete this owner? (y/n): ")
+        if confirmation.lower() == 'y':
             cursor.execute('DELETE FROM owners WHERE id=?', (owner_id,))
             conn.commit()
-            print(f"Owner with ID {owner_id} deleted successfully")
-            
-        
-    @classmethod
-    def instance_from_db(cls, row):
-           
-        owner = cls.all.get(row[0])
-        if owner:
-            owner.name = row[1]
-            owner.phone_number= row[2]
-        else:
-            owner = cls(row[1], row[2])
-            owner.id = row[0]
-            cls.all[owner.id] = owner
-        return owner
-    
-    @classmethod
-    def get_all(cls):
-        sql= """
-        SELECT * FROM owners
-        """
-        rows = cursor.execute(sql).fetchall
-        return [cls.instance_from_db(row) for row in rows]
-    
-    @classmethod
-    def find_by_id(cls, id):
-        sql = """
-        SELECT * FROM  owners
-        where id = ?
-        """
-        row = cursor.execute(sql, (id,)).fetchone()
-        return cls.instance_from_db(row) if row else None
+            print(f"Owner with ID {owner_id} deleted successfully.")
 
-Owner.create_table()
+    @staticmethod
+    def get_all():
+        cursor.execute('SELECT * FROM owners')
+        return cursor.fetchall()
+
+    @staticmethod
+    def find_by_id(owner_id):
+        cursor.execute('SELECT * FROM owners WHERE id=?', (owner_id,))
+        return cursor.fetchone()
+  
+                
+                
+                
+                
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,10 +1,33 @@
+from rich.console  import Console
+from rich.theme import Theme
+from rich import print
+
+console = Console()
+custom_theme = Theme({"success":"green", "error":"bold red"})
+console = Console(theme=custom_theme)
 from models.owner import Owner
 from models.property import Property
 from models.tenant import Tenant
+import re 
+
+# Function to validate a name input
+def validate_name(name):
+    while not re.match(r"^[a-zA-Z ]+$", name.strip()):  # Allows alphabets and spaces only
+        print("Invalid name format. Please enter a valid name (alphabets and spaces only).")
+        name = input("Enter name again: ")
+    return name.strip()
+
+# Function to validate a phone number input
+def validate_phone_number(phone_number):
+    while not re.match(r"^\d{10,}$", phone_number.strip()): # Requires 10 digits or more for phone number
+        print("Invalid phone number format. Please enter a valid 10-digit phone number.")
+        phone_number = input("Enter phone number again: ")
+    return phone_number.strip()
 
 def main():
     while True:
-        print("\n Welcome To Real Estate Management SYSTEM")
+        console.print("\n Welcome To Real Estate Management SYSTEM", style="bold underline red on white")
+
 
 # Owner methods
         print("1. Add Owner")
@@ -12,7 +35,7 @@ def main():
         print("3. Delete Owner")
         print("4. Display Owners")
         print("5. Find Owner by ID")
-        
+                
 # Property methods
         print("6. Add Property")
         print("7. Update Property")
@@ -33,23 +56,39 @@ def main():
 # Owner 
  
         if choice == "1":
-            name = str(input("Enter Owner's name:"))
-            phone_number = int("Enter owner's phone number: ")
+            name = validate_name(input("Enter owner's name: "))
+            phone_number = validate_phone_number(input("Enter owner's phone number: "))
             Owner.create(name, phone_number)
-            print(f"Owner '{name}' added successfully.")
+            console.print(f"Owner '{name}' added successfully.", style="success")
           
-        elif choice =="2":
+        elif choice == "2":
                 try:
-                        owner_id = int (input("Enter owner Id to update:"))  
+                    owner_id = int (input("Enter owner Id to update:"))  
                 except ValueError:
-                        print("Invalid input. Please enter valid integer for owner Id.")
+                        console.print("Invalid input. Please enter valid integer for owner Id.",style="error")
                         continue
                 owner = Owner.find_by_id(owner_id)
                 if owner:
-                        name= input(f"Enter new name for owner({owner[1]}), or press Enter to leave unchanged")
-                        phone_number= input(f"Rnter new phone number for owner({owner[2]}), or press Enter to leave unchanged")
-                        Owner.update(owner_id, name, phone_number)
-                        print(f"Owner ID {owner_id} updated successfully.")
+                 while True:
+                    name_input = input(f"Enter new name for owner ({owner[1]}), or press Enter to leave unchanged: ")
+                    if name_input.strip():  
+                        name = validate_name(name_input)
+                        break
+                    else:
+                        name = owner[1]
+                        break
+                    
+                 while True:
+                    phone_input = input(f"Enter new phone number for owner ({owner[2]}), or press Enter to leave unchanged: ")
+                    if phone_input.strip():  # Check if input is not empty
+                        phone_number = validate_phone_number(phone_input)
+                        break
+                    else:
+                        phone_number = owner[2]
+                        break                
+                    
+                 Owner.update(owner_id, name, phone_number)
+                 print(f"Owner ID {owner_id} updated successfully.")
                 else:
                         print("Owner not found.")
                         
@@ -102,16 +141,16 @@ def main():
                 print("Invalid input. Please enter a valid integer for owner ID.")
                 continue  # Restart the loop to prompt the user again
 
-            owner_id = int(input("Enter owner ID for this property: "))
+            
             Property.create(address, owner_id)
-            print(f"Property '{address}' added successfully with Owner ID {owner_id}.")
+            console.print(f"Property '{address}' added successfully with Owner ID {owner_id}.", style="error")
                 
                 
         elif choice == '7':
             try:
-                property_id = int(input("Enter property ID to update: "))
+                property_id = int(input("Enter property Id to update: "))
             except ValueError:
-                print("Invalid input. Please enter a valid integer for property ID.")
+                print("Invalid input. Please enter a valid integer for property Id.")
                 continue  # Restart the loop to prompt the user again
 
             property = Property.find_by_id(property_id)
@@ -124,9 +163,9 @@ def main():
                 
         elif choice == '8':
             try:
-                property_id = int(input("Enter property ID to delete: "))
+                property_id = int(input("Enter property Id to delete: "))
             except ValueError:
-                print("Invalid input. Please enter a valid integer for property ID.")
+                print("Invalid input. Please enter a valid integer for property Id.")
                 continue  # Restart the loop to prompt the user again
 
             property = Property.find_by_id(property_id)
@@ -162,13 +201,100 @@ def main():
                 print("Property not found.")
                 
 # tenant
+        elif choice == '11':
+            name = validate_name(input("Enter tenant's name: "))
+            phone_number = validate_phone_number(input("Enter tenant's phone number: "))
+            email = input("Enter tenant's email: ")
+            property_id = input("Enter property ID for this tenant: ")
+            Tenant.create(name, phone_number, email, property_id)
+            print(f"Tenant '{name}' added successfully to Property ID {property_id}.")
+            
+        elif choice == '12':
+            try:
+                tenant_id = int(input("Enter tenant Id to update: "))
+            except ValueError:
+                print("Invalid input. Please enter a valid integer for tenant ID.")
+                continue
+            
+            tenant = Tenant.find_by_id  (tenant_id)  
+            if tenant:             
+                while True:
+                    name_input = input(f"Enter new name for tenant ({tenant[1]}), or press Enter to leave unchanged: ")
+                    if name_input.strip():  
+                        name = validate_name(name_input)
+                        break
+                    else:
+                        name = tenant[1]
+                        break
+
+               
+                while True:
+                    phone_input = input(f"Enter new phone number for tenant ({tenant[2]}), or press Enter to leave unchanged: ")
+                    if phone_input.strip(): 
+                        phone_number = validate_phone_number(phone_input)
+                        break
+                    else:
+                        phone_number = tenant[2]
+                        break
+                email = input(f"Enter new email for tenant ({tenant[3]}), or press Enter to leave unchanged: ")
         
+                Tenant.update(tenant_id, name, phone_number, email)
+                print(f"Tenant Id {tenant_id} updated successfully.")
+            else:
+                print("Tenant not found.")
+            
+        elif choice == '13':
+            try:
+                tenant_id = int(input("Enter tenant ID to delete: "))             
+            except ValueError:
+                        print("Invalid input. Please enter a valid integer for tenant ID.")
+                        continue 
+
+            tenant = Tenant.find_by_id(tenant_id)
+            if tenant:
+                    Tenant.delete(tenant_id)                
+            else:
+                    print("Tenant not found.")  
+        elif choice =='14':
+            tenants = Tenant.get_all()
+            if tenants:
+                print("Tenants:")
+                print("-" * 20)
+                for tenant in tenants:
+                    print(f"ID: {tenant[0]}")
+                    print(f"Name: {tenant[1]}")
+                    print(f"Phone Number:{tenant[2]}")
+                    print(f"Email:{tenant[2]}")
+                    print(f"Properties ID: {tenant[3]}")
+                    print("-" * 20)  # Separate each tenants details
+            else:
+                print("No tenants found.")
+        elif choice == '15':
+            try:
+                tenant_id = int(input("Enter tenant Id to find: "))
+            except ValueError:
+                print("Invalid input. Please enter a valid integer for tenant ID.")
+                continue  # Restart the loop to prompt the user again
+
+            tenant = Tenant.find_by_id(tenant_id)
+            if tenant:
+                print(f"Tenant ID: {tenant[0]}, Name:{tenant[1]} Phone number: {tenant[2]}, Email: {tenant[3]}, Project ID: {tenant[4]}")
+            else:
+                print("Tenant not found.")
+                         
         elif choice == '16':
-            print("Goodbye! ")
+            console.print(":thumbs_up: Goodbye!")
             break
 
         else:
-            print("Invalid choice. Please try again.") 
+            print("Invalid choice. Please try again.")
+            
         
-if __name__ == "__main__":
+if __name__  == "__main__":
     main()
+ 
+                
+        
+        
+        
+            
