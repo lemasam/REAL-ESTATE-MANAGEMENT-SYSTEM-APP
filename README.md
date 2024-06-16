@@ -1,6 +1,6 @@
 # # PROJECT NAME: REAL-ESTAE-MANAGEMENT-APP
 ## Date:
-14/06/2024
+17/06/2024
 
 ## Author:
 Thereshiah Lema Samuel
@@ -37,7 +37,7 @@ SQLite
 
 ## Installation
 1. Clone this repository
-
+     git@github.com:lemasam/REAL-ESTAE-APP.git
 
 2. Open cloned code in VScode
 3. Create the SQLite database file property_management.db by running the main script: python main.py
@@ -45,9 +45,12 @@ SQLite
 5. Follow the on-screen prompts to manage owners, properties and tenants.
 
 ## project link
+Github link:https://github.com/lemasam/REAL-ESTAE-APP.git
 
 ## contact Details and support:
-github: Lema Sam, email: thereshiah.samuel@student.moringaschool.com email: lemasam10@gmail.com
+github: Lema Sam, 
+email: thereshiah.samuel@student.moringaschool.com 
+email: lemasam10@gmail.com
 
 
 
