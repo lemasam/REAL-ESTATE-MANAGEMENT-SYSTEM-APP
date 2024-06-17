@@ -4,11 +4,10 @@
 
 import sqlite3
 
-# Create a SQLite database
+
 conn = sqlite3.connect('management.db')
 cursor = conn.cursor()
 def create_tables_if_not_exist():
-    # Connect to the SQLite database
     conn = sqlite3.connect('management.db')
     cursor = conn.cursor()
     
