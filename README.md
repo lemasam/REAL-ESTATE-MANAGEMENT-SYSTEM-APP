@@ -47,7 +47,6 @@ SQLite
 ## project link
 Github link:https://github.com/lemasam/REAL-ESTAE-APP.git
 Video link: file:///home/lema-samuel/Videos/Screencasts/REAL-ESTATE-MANAGEMENT-SYSTEM.zip
-file:///home/lema-samuel/Videos/Screencasts/REAL-ESTATE-APP.zip
 
 
 
