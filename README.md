@@ -33,7 +33,7 @@ A working Terminal interface
 python installed in your computer
 A python interpreter
 SQLite
-file:///home/lema-samuel/Videos/Screencasts/REAL-ESTATE-MANAGEMENT-SYSTEM.zip
+
 
 
 ## Installation
