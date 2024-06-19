@@ -47,7 +47,10 @@ SQLite
 ## project link
 Github link:https://github.com/lemasam/REAL-ESTAE-APP.git
 
-Video link:file:///home/lema-samuel/Videos/Screencasts/Real.App.zip
+Video link
+
+file:///home/lema-samuel/Videos/Screencasts/Real.App.zip
+
 
 
 
